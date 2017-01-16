@@ -2,26 +2,21 @@ FROM debian:wheezy
 
 MAINTAINER garvin [dot] leclaire [at] gmail [dot] com
 
+COPY tools /opt/tools
+
 # Install basics 
 RUN apt-get update &&  \
     apt-get install -y git wget curl && \
-    apt-get clean
-
-RUN curl -sL https://deb.nodesource.com/setup | bash -
-
-RUN apt-get update &&  \
+    apt-get clean && \
+    curl -sL https://deb.nodesource.com/setup | bash - && \
+    apt-get update && \
     apt-get install -y nodejs nodejs-legacy build-essential && \
     ln -s /usr/bin/nodejs /usr/local/bin/node && \ 
-    apt-get clean
-
-
-COPY tools /opt/tools
-
-# Install npm packages
-RUN npm install -g cordova ionic
-RUN npm install -g grunt-cli
-RUN npm install -g gulp
-RUN npm install -g bower
+    apt-get clean && \
+    npm install -g cordova ionic && \
+    npm install -g grunt-cli && \
+    npm install -g gulp && \
+    npm install -g bower
 
 RUN ionic start ionic-demo sidemenu
 
@@ -33,29 +28,29 @@ EXPOSE 8100 35729
 #JAVA
 
 # ENV DEBIAN_FRONTEND noninteractive
-RUN dpkg-reconfigure debconf -f Noninteractive
+RUN dpkg-reconfigure debconf -f Noninteractive && \
 
-# install python-software-properties (so you can do add-apt-repository)
-RUN apt-get update && apt-get install -y -q python-software-properties software-properties-common && apt-get clean
+    # install python-software-properties (so you can do add-apt-repository)
+    apt-get update && apt-get install -y -q python-software-properties software-properties-common && apt-get clean && \
 
-# install oracle java from PPA
-# RUN add-apt-repository ppa:webupd8team/java -y
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-#echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-# RUN apt-get update && apt-get -y install oracle-java7-installer && apt-get clean
+    # install oracle java from PPA
+    # RUN add-apt-repository ppa:webupd8team/java -y
+    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
+    #echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+    # RUN apt-get update && apt-get -y install oracle-java7-installer && apt-get clean
 
-RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee /etc/apt/sources.list.d/webupd8team-java.list
-RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
-RUN apt-get update &&  \
+    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee /etc/apt/sources.list.d/webupd8team-java.list && \
+    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list && \
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 && \
+    apt-get update &&  \
     apt-get install -y oracle-java8-installer && \
-    apt-get clean
+    apt-get clean && \
 
 #ANDROID STUFF
-RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --force-yes expect ant wget libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 lib32z1 qemu-kvm kmod && apt-get clean
+    dpkg --add-architecture i386 && apt-get update && apt-get install -y --force-yes expect ant wget libc6-i386 lib32stdc++6 lib32gcc1 lib32ncurses5 lib32z1 qemu-kvm kmod && apt-get clean && \
 
 # Install Android SDK
-RUN cd /opt && wget --output-document=android-sdk.tgz --quiet http://dl.google.com/android/android-sdk_r24.0.2-linux.tgz && tar xzf android-sdk.tgz && rm -f android-sdk.tgz
+    cd /opt && wget --output-document=android-sdk.tgz --quiet http://dl.google.com/android/android-sdk_r24.0.2-linux.tgz && tar xzf android-sdk.tgz && rm -f android-sdk.tgz && \
 
 # Setup environment
 ENV ANDROID_HOME /opt/android-sdk-linux
